@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Bootstrap demo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+</head>
+
+<body>
+    <style>
+        :root {
+            --row-width: 12vw;
+            --shadow-background: #e0e0e0;
+            --shadow-light: #ffffff;
+            --shadow-dark: #bebebe;
+        }
+
+        @keyframes moving {
+            90% {
+                top: 15%
+            }
+
+            100% {
+                top: 0%;
+            }
+        }
+
+        @keyframes slide {
+
+            0%,
+            100% {
+                left: -50px;
+            }
+
+            50% {
+                left: 110%;
+            }
+        }
+
+        .SM_container {
+            width: 70%;
+            margin: 200px auto;
+            position: relative;
+        }
+
+        .SM_game_container {
+            display: flex;
+            align-items: center;
+            padding: 0 10px;
+            justify-content: space-between;
+        }
+
+        .SM_spin_row_container {
+            height: calc(1.5*var(--row-width));
+            width: calc(4*var(--row-width));
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            border-radius: 50px;
+            background: var(--shadow-background);
+            box-shadow: inset 20px 20px 47px var(--shadow-dark),
+                inset -20px -20px 47px var(--shadow-light);
+        }
+
+        .spin_row {
+            position: relative;
+            padding: 0;
+            overflow: hidden;
+            width: var(--row-width);
+            height: var(--row-width);
+            border-radius: 53px;
+            background: var(--shadow-background);
+            box-shadow: 11px 11px 19px var(--shadow-dark),
+                -11px -11px 19px var(--shadow-light);
+        }
+
+        .SM_row_container {
+            position: absolute;
+            width: 100%;
+        }
+
+        .SM_item {
+            height: var(--row-width);
+        }
+
+        #SM_play_btn_container {
+            flex-grow: 1;
+            text-align: center;
+        }
+
+        #SM_play_btn {
+            height: calc(0.5*var(--row-width));
+            width: calc(0.5*var(--row-width));
+            cursor: pointer;
+            outline: none;
+            border: none;
+            border-radius: 50%;
+            background: #57e389;
+            box-shadow: 5px 5px 9px #317f4d,
+                -5px -5px 9px #7dffc5;
+            font-family: 'Courier New, monospace';
+            font-size: 1.5vw;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #SM_play_btn::after {
+            content: '';
+            width: 30%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.3);
+            ;
+            top: 0;
+            left: -50%;
+            position: absolute;
+            transform: skew(30deg);
+        }
+
+        #SM_play_btn:hover:after {
+            animation: slide 1s infinite;
+            animation-iteration-count: 1;
+        }
+
+        #SM_play_btn:active {
+            transform: translateY(4px) translateX(4px);
+        }
+
+        #SM_board_instruction {
+            display: flex;
+            margin-top: 25px;
+            justify-content: space-between;
+            padding: 0 10px;
+            flex-wrap: wrap;
+        }
+
+        #SM_score_board_container {
+            display: flex;
+            width: calc(4*var(--row-width));
+            justify-content: space-between;
+            border-radius: 50px;
+            background: var(--shadow-background);
+            box-shadow: inset 20px 20px 47px var(--shadow-dark),
+                inset -20px -20px 47px var(--shadow-light);
+            padding: 20px;
+        }
+
+        .SM_score_board_item {
+            padding: 10px;
+            font-size: 1.2vw;
+            font-family: 'Courier New, monospace';
+            border-radius: 20px;
+            background: var(--shadow-background);
+            box-shadow: 20px 20px 60px var(--shadow-dark),
+                -20px -20px 60px var(--shadow-light);
+            width: 33%;
+            margin: 0 15px;
+            text-align: center;
+        }
+
+        #SM_bet {
+            outline: none;
+            border: none;
+            background-color: transparent;
+        }
+
+        #SM_instruction_button {
+            flex-grow: 1;
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #SM_instruction_button h2 {
+            cursor: pointer;
+            padding: 5px;
+            border-bottom: black solid 1px;
+        }
+
+        #SM_instruction_button h2:hover {
+            color: rgb(255, 94, 0);
+            border-bottom: rgb(255, 94, 0) solid 1px;
+        }
+
+        #SM_instruction {
+            /* position: absolute;
+            width: 100%;
+            min-height: 100%;
+            top: 0;
+            background-color: rgba(0, 0, 0, 0.26); */
+        }
+
+        @media screen and (max-width: 1000px) {
+            #SM_score_board_container {
+                width: 100%
+            }
+        }
+    </style>
+    <div class="SM_container">
+        <div class="SM_game_container">
+            <div class="SM_spin_row_container">
+                <div class="col-md-3 spin_row">
+                    <div class="SM_row_container" id="row_1">
+                        <div class="SM_item SM_active">
+                            <img key='1' src="image/1.png" class="slotImage w-100" />
+                        </div>
+                    </div>
+
+                </div>
+                <div class="col-md-3 spin_row">
+                    <div class="SM_row_container" id="row_2">
+                        <div class="SM_item SM_active"><img key='1' src="image/1.png" class="slotImage w-100" />
+                        </div>
+                    </div>
+
+                </div>
+                <div class="col-md-3 spin_row">
+                    <div class="SM_row_container" id="row_3">
+                        <div class="SM_item SM_active"><img key='1' src="image/1.png" class="slotImage w-100" />
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div id="SM_play_btn_container">
+                <button onClick={startSpin()} id="SM_play_btn">PLAY</button>
+            </div>
+        </div>
+        <div id="SM_board_instruction">
+            <div id="SM_score_board_container">
+                <div class="SM_score_board_item" id="SM_credit">
+                    Credit: 1000$
+                </div>
+                <div class="SM_score_board_item">
+                    Bet: <input onChange={isEnoughCredit()} id="SM_bet" type="number" step="5" min='0' max="100"
+                        class="w-50 text-center" />
+                </div>
+                <div class="SM_score_board_item" id="SM_won">
+                    You win: 0$
+                </div>
+            </div>
+            <div id="SM_instruction_button">
+                <h2>How to play?</h2>
+            </div>
+        </div>
+        <div id="SM_instruction">
+
+        </div>
+    </div>
+
+</body>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<script src='jquery.js'></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN"
+    crossorigin="anonymous"></script>
+<script>
+    var credit = 1000
+    $("#SM_bet").keypress(function (evt) {
+        evt.preventDefault();
+    });
+    const isEnoughCredit = () => {
+        if (credit < $('#SM_bet').val()) disableButton()
+        else enableButton()
+    }
+    const disableButton = () => {
+        $('#SM_play_btn').prop('disabled', true)
+        $('#SM_play_btn').css({
+            background: '#f66151',
+            color: 'black',
+            'box-shadow': '5px 5px 9px #8a362d,-5px -5px 9px #ff8c75',
+        })
+    }
+    const enableButton = () => {
+        $('#SM_play_btn').prop('disabled', false)
+        $('#SM_play_btn').css({
+            background: '#57e389',
+            'box-shadow': '5px 5px 9px #317f4d,-5px -5px 9px #7dffc5',
+        })
+    }
+    const startSpin = () => {
+        disableButton()
+        spin(1, 6, 4, 'row_1', 3)
+        spin(1, 6, 5, 'row_2', 4)
+        spin(1, 6, 6, 'row_3', 5)
+    }
+
+    const spin = (min, max, spin, row, time) => {
+        var pairs = getRndInteger(spin, max);
+        var result = getRndInteger(min, max);
+
+        var activeValue = parseInt($(`#${row} .SM_active img`).attr('key')) //gia tri hien tai
+
+        //Khoi tao mang
+        for (var i = 1; i <= pairs; i++) {
+            for (var j = 1; j < max; j++) {
+                activeValue++
+                if (activeValue === max) activeValue = min
+                $(`#${row}`).prepend(`<div class="SM_item"><img key='${activeValue}' src="image/${activeValue}.png" class="slotImage w-100" /></div>`)
+            }
+        }
+
+        for (var i = 1; i < max; i++) {
+            activeValue++
+            if (activeValue === max) activeValue = min
+            $(`#${row}`).prepend(`<div class="SM_item"><img key='${activeValue}' src="image/${activeValue}.png" class="slotImage w-100" /></div>`)
+            if (activeValue === result) break
+        }
+
+        var height = $(`#${row}`).height()
+        var constWidth = $('.SM_item').height()
+        $(`#${row}`).css('top', `-${height - constWidth}px`) // set vi tri ban dau
+
+        $(`#${row}`).css('animation', `moving ${time}s ease-in-out forwards`) // start spin
+
+        setTimeout(() => {
+            $(`#${row}`).html(`<div class="SM_item SM_active"><img key='${result}' src="image/${result}.png" class="slotImage w-100" /></div>`)
+            $(`#${row}`).css({
+                animation: '',
+                top: 0,
+            })
+            enableButton()
+        }, 6000)
+
+    }
+    function getRndInteger(min, max) {
+        return Math.floor(Math.random() * (max - min)) + min;
+    }
+
+</script>
+
+</html>
