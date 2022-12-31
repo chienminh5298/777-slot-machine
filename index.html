@@ -18,6 +18,10 @@
             --shadow-dark: #bebebe;
         }
 
+        body {
+            background-color: var(--shadow-background);
+        }
+
         @keyframes moving {
             90% {
                 top: 15%
@@ -53,7 +57,17 @@
             justify-content: space-between;
         }
 
+        #SM_logo {
+            position: absolute;
+            transform: translate(-50%, -50%);
+            top: -5%;
+            left: 50%;
+            width: 15%;
+            z-index: 2;
+        }
+
         .SM_spin_row_container {
+            position: relative;
             height: calc(1.5*var(--row-width));
             width: calc(4*var(--row-width));
             display: flex;
@@ -174,6 +188,10 @@
             align-items: center;
         }
 
+        #SM_instruction_button:active {
+            transform: translateY(4px) translateX(4px);
+        }
+
         #SM_instruction_button h2 {
             cursor: pointer;
             padding: 5px;
@@ -186,11 +204,52 @@
         }
 
         #SM_instruction {
-            /* position: absolute;
+            position: absolute;
             width: 100%;
             min-height: 100%;
-            top: 0;
-            background-color: rgba(0, 0, 0, 0.26); */
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.26);
+            overflow: hidden;
+            border-radius: 50px;
+            background: linear-gradient(145deg, #f0f0f0, #cacaca);
+            box-shadow: 5px 5px 5px #5a5a5a,
+                -5px -5px 5px #ffffff;
+            z-index: 3;
+        }
+
+        #SM_close_instruction {
+            width: 50px;
+            height: 50px;
+            position: absolute;
+            right: 3%;
+            top: 3%;
+            background-color: white;
+            border-radius: 50%;
+            border: none;
+            background: linear-gradient(145deg, #f0f0f0, #cacaca);
+            box-shadow: 4px 4px 7px #070707, -2px -2px 7px var(--shadow-light);
+        }
+
+        #SM_close_instruction:active {
+            transform: translateY(2px) translateX(2px);
+        }
+
+        #SM_mute_button {
+            margin-top: 10%;
+        }
+
+        #SM_mute_button button {
+            border: none;
+            border-radius: 5px;
+            background: #f5c211;
+            box-shadow: 2px 2px 2px #d0a50e, -2px -2px 2px #ffdf14;
+            padding: 5px 15px;
+        }
+
+        #SM_mute_button button:active {
+            transform: translateY(2px) translateX(2px);
         }
 
         @media screen and (max-width: 1000px) {
@@ -202,6 +261,7 @@
     <div class="SM_container">
         <div class="SM_game_container">
             <div class="SM_spin_row_container">
+                <img src="image/logo.png" alt="logo" id="SM_logo" />
                 <div class="col-md-3 spin_row">
                     <div class="SM_row_container" id="row_1">
                         <div class="SM_item SM_active">
@@ -227,27 +287,31 @@
             </div>
             <div id="SM_play_btn_container">
                 <button onClick={startSpin()} id="SM_play_btn">PLAY</button>
+                <div id="SM_mute_button">
+                    <button onClick={toggleSound()}>Mute</button>
+                </div>
             </div>
         </div>
         <div id="SM_board_instruction">
             <div id="SM_score_board_container">
                 <div class="SM_score_board_item" id="SM_credit">
-                    Credit: 1000$
+                    Credit: <span>1000</span>$
                 </div>
                 <div class="SM_score_board_item">
-                    Bet: <input onChange={isEnoughCredit()} id="SM_bet" type="number" step="5" min='0' max="100"
+                    Bet: <input onChange={isEnoughCredit()} id="SM_bet" type="number" step="1" min='1' max="100"
                         class="w-50 text-center" />
                 </div>
                 <div class="SM_score_board_item" id="SM_won">
-                    You win: 0$
+                    You win: <span>0</span>$
                 </div>
             </div>
             <div id="SM_instruction_button">
-                <h2>How to play?</h2>
+                <h2 onClick={showInstruction()}>How to play?</h2>
             </div>
         </div>
-        <div id="SM_instruction">
-
+        <div id="SM_instruction" class="d-none">
+            <button onClick={showInstruction()} id="SM_close_instruction">X</button>
+            <img src="image/award.png" class="w-100" alt="award">
         </div>
     </div>
 
@@ -258,15 +322,40 @@
     integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN"
     crossorigin="anonymous"></script>
 <script>
-    var credit = 1000
+    var isSound = true
+
+    const toggleSound = () => {
+        var button = $('#SM_mute_button button')
+        if (isSound) {
+            button.html('Unmute')
+            button.css({
+                background: '#f66151',
+                'box-shadow': '2px 2px 2px #8a362d, -2px -2px 2px #ff8c75',
+            })
+        } else {
+            button.html('Mute')
+            button.css({
+                background: '#f5c211',
+                'box-shadow': '2px 2px 2px #d0a50e, -2px -2px 2px #ffdf14',
+            })
+        }
+        isSound = !isSound
+    }
+
     $("#SM_bet").keypress(function (evt) {
         evt.preventDefault();
     });
-    const isEnoughCredit = () => {
-        if (credit < $('#SM_bet').val()) disableButton()
-        else enableButton()
+
+    const showInstruction = () => {
+        $('#SM_instruction').toggleClass('d-none');
     }
-    const disableButton = () => {
+
+    const isEnoughCredit = () => {
+        if (credit < $('#SM_bet').val()) disablePlayButton()
+        else enablePlayButton()
+    }
+
+    const disablePlayButton = () => {
         $('#SM_play_btn').prop('disabled', true)
         $('#SM_play_btn').css({
             background: '#f66151',
@@ -274,18 +363,67 @@
             'box-shadow': '5px 5px 9px #8a362d,-5px -5px 9px #ff8c75',
         })
     }
-    const enableButton = () => {
+    const enablePlayButton = () => {
         $('#SM_play_btn').prop('disabled', false)
         $('#SM_play_btn').css({
             background: '#57e389',
             'box-shadow': '5px 5px 9px #317f4d,-5px -5px 9px #7dffc5',
         })
     }
+
+    /** Game function*/
+    const periodTime = 6000 // 6s it should largest numbet than last param of spin function below
+    var credit = 1000
+
     const startSpin = () => {
-        disableButton()
-        spin(1, 6, 4, 'row_1', 3)
-        spin(1, 6, 5, 'row_2', 4)
-        spin(1, 6, 6, 'row_3', 5)
+        const bet = $('#SM_bet').val()
+        $('#SM_won span').text('0')
+        if (credit >= bet) {
+            if (isSound) {
+                var audio = new Audio('audio/spin.mp3');
+                audio.play();
+            }
+            disablePlayButton()
+            $('#SM_bet').prop('disabled', true) // disable bet input
+
+            subtractCredit(bet)
+
+            spin(1, 6, 4, 'row_1', 3)
+            spin(1, 6, 5, 'row_2', 4)
+            spin(1, 6, 6, 'row_3', 5)
+
+            setTimeout(() => {
+                wonCredit(bet)
+                enablePlayButton()
+                $('#SM_bet').prop('disabled', false)
+            }, periodTime)
+        } else alert('Reload page to restart your game. Good luck next time.')
+
+    }
+
+    const wonCredit = (bet) => {
+        const results = [111, 777, 333, 444, 555, 666, 888, 222, 11, 77, 33, 44, 55, 66, 88, 22]
+        const awards = [1000, 800, 700, 60, 50, 40, 30, 20, 100, 20, 15, 10, 9, 8, 7, 5]
+        const result = $(`#row_1 .SM_active img`).attr('key') + $(`#row_2 .SM_active img`).attr('key') + $(`#row_3 .SM_active img`).attr('key')
+
+        var won = 0
+        for (var i = 0; i < results.length; i++) {
+            if (result.includes(results[i])) {
+                // Enable win sound here
+                won = awards[i] * bet
+                credit += won;
+                isWon = true
+                break;
+            }
+        }
+
+        $('#SM_credit span').text(credit)
+        $('#SM_won span').text(won)
+    }
+
+    const subtractCredit = (bet) => {
+        credit -= bet
+        $('#SM_credit span').text(credit)
     }
 
     const spin = (min, max, spin, row, time) => {
@@ -316,14 +454,20 @@
 
         $(`#${row}`).css('animation', `moving ${time}s ease-in-out forwards`) // start spin
 
+        if (isSound) {
+            setTimeout(() => {
+                var audio = new Audio('audio/done.mp3');
+                audio.play();
+            }, `${time}000`)
+        }
+
         setTimeout(() => {
             $(`#${row}`).html(`<div class="SM_item SM_active"><img key='${result}' src="image/${result}.png" class="slotImage w-100" /></div>`)
             $(`#${row}`).css({
                 animation: '',
                 top: 0,
             })
-            enableButton()
-        }, 6000)
+        }, periodTime)
 
     }
     function getRndInteger(min, max) {
