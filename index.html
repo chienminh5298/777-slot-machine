@@ -44,6 +44,13 @@
             }
         }
 
+        @keyframes lightFlashing {
+            50% {
+                box-shadow: 11px 11px 19px var(--shadow-dark),
+                    -11px -11px 19px var(--shadow-light);
+            }
+        }
+
         .SM_container {
             width: 70%;
             margin: 200px auto;
@@ -252,6 +259,12 @@
             transform: translateY(2px) translateX(2px);
         }
 
+        .wonEffect {
+            box-shadow: 11px 11px 19px var(--shadow-dark),
+                -11px -11px 19px #0eceb3;
+            animation: lightFlashing 1s linear infinite;
+        }
+
         @media screen and (max-width: 1000px) {
             #SM_score_board_container {
                 width: 100%
@@ -262,7 +275,7 @@
         <div class="SM_game_container">
             <div class="SM_spin_row_container">
                 <img src="image/logo.png" alt="logo" id="SM_logo" />
-                <div class="col-md-3 spin_row">
+                <div class="col-md-3 spin_row" id="spin_row_1">
                     <div class="SM_row_container" id="row_1">
                         <div class="SM_item SM_active">
                             <img key='1' src="image/1.png" class="slotImage w-100" />
@@ -270,20 +283,19 @@
                     </div>
 
                 </div>
-                <div class="col-md-3 spin_row">
+                <div class="col-md-3 spin_row" id="spin_row_2">
                     <div class="SM_row_container" id="row_2">
                         <div class="SM_item SM_active"><img key='1' src="image/1.png" class="slotImage w-100" />
                         </div>
                     </div>
 
                 </div>
-                <div class="col-md-3 spin_row">
+                <div class="col-md-3 spin_row" id="spin_row_3">
                     <div class="SM_row_container" id="row_3">
                         <div class="SM_item SM_active"><img key='1' src="image/1.png" class="slotImage w-100" />
                         </div>
                     </div>
                 </div>
-
             </div>
             <div id="SM_play_btn_container">
                 <button onClick={startSpin()} id="SM_play_btn">PLAY</button>
@@ -299,7 +311,7 @@
                 </div>
                 <div class="SM_score_board_item">
                     Bet: <input onChange={isEnoughCredit()} id="SM_bet" type="number" step="1" min='1' max="100"
-                        class="w-50 text-center" />
+                        class="w-50 text-center" value="1" />
                 </div>
                 <div class="SM_score_board_item" id="SM_won">
                     You win: <span>0</span>$
@@ -370,6 +382,12 @@
             'box-shadow': '5px 5px 9px #317f4d,-5px -5px 9px #7dffc5',
         })
     }
+    const addWonEffect = (element) => {
+        $(`${element}`).addClass('wonEffect');
+    }
+    const removeWonEffect = (element) => {
+        $(`${element}`).removeClass('wonEffect');
+    }
 
     /** Game function*/
     const periodTime = 6000 // 6s it should largest numbet than last param of spin function below
@@ -383,6 +401,7 @@
                 var audio = new Audio('audio/spin.mp3');
                 audio.play();
             }
+            removeWonEffect('.spin_row')
             disablePlayButton()
             $('#SM_bet').prop('disabled', true) // disable bet input
 
@@ -398,12 +417,26 @@
                 $('#SM_bet').prop('disabled', false)
             }, periodTime)
         } else alert('Reload page to restart your game. Good luck next time.')
-
     }
 
     const wonCredit = (bet) => {
         const results = [111, 777, 333, 444, 555, 666, 888, 222, 11, 77, 33, 44, 55, 66, 88, 22]
         const awards = [1000, 800, 700, 60, 50, 40, 30, 20, 100, 20, 15, 10, 9, 8, 7, 5]
+
+        const key_1 = $(`#row_1 .SM_active img`).attr('key')
+        const key_2 = $(`#row_2 .SM_active img`).attr('key')
+        const key_3 = $(`#row_3 .SM_active img`).attr('key')
+
+        if (key_1 === key_2 === key_3) {
+            addWonEffect('.spin_row')
+        } else if (key_1 === key_2) {
+            addWonEffect('#spin_row_1')
+            addWonEffect('#spin_row_2')
+        } else if (key_2 === key_3) {
+            addWonEffect('#spin_row_2')
+            addWonEffect('#spin_row_3')
+        }
+
         const result = $(`#row_1 .SM_active img`).attr('key') + $(`#row_2 .SM_active img`).attr('key') + $(`#row_3 .SM_active img`).attr('key')
 
         var won = 0
