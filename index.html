@@ -427,7 +427,7 @@
         const key_2 = $(`#row_2 .SM_active img`).attr('key')
         const key_3 = $(`#row_3 .SM_active img`).attr('key')
 
-        if (key_1 === key_2 === key_3) {
+        if (key_1 === key_2 && key_1 === key_3) {
             addWonEffect('.spin_row')
         } else if (key_1 === key_2) {
             addWonEffect('#spin_row_1')
